@@ -147,4 +147,31 @@ class UserTest extends TestCase
 
         $response->assertStatus(200);
     }
+
+    /** @test */
+    public function verify_if_update_user()
+    {
+        $loginData = [
+            "email" => "anderson@email.com",
+            "password" => "123123"
+        ];
+
+        $loginUser = $this->post("api/user/login", $loginData);
+
+        $header = [
+            "HTTP_ACCEPT" => "application/ld+json",
+            "HTTP_AUTHORIZATION" => "Bearer " . $loginUser->decodeResponseJson()["token"]
+        ];
+
+        $data = [
+            "name" => "nome alterado",
+            "tipo_id" => 2,
+            "local_id" => 100,
+            "budget" => 2000
+        ];
+
+        $response = $this->put("api/user/" . $loginUser->decodeResponseJson()["data"]["id"], $data, $header);
+
+        $response->assertStatus(200);
+    }
 }

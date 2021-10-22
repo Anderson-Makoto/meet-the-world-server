@@ -11,7 +11,8 @@ use Exception;
 
 class UserController extends Controller
 {
-    public function register (Request $request) {
+    public function register(Request $request)
+    {
 
         $request->validate([
             "name" => "required|string",
@@ -33,11 +34,11 @@ class UserController extends Controller
                 "local_id" => $request->input("local_id"),
                 "budget" => $request->input("budget")
             ]);
-    
+
             $token = $user->createToken("API token")->plainTextToken;
-    
+
             DB::commit();
-    
+
             return response()->json([
                 "data" => $user,
                 "token" => $token
@@ -54,13 +55,11 @@ class UserController extends Controller
                     "data" => $e
                 ], 500);
             }
-
-            
         }
-
     }
 
-    public function login (Request $request) {
+    public function login(Request $request)
+    {
         $request->validate([
             "email" => "required|string",
             "password" => "required|string"
@@ -76,7 +75,7 @@ class UserController extends Controller
                 return response()->json([
                     "data" => $user,
                     "token" => $token
-                ], 200);    
+                ], 200);
             } else {
                 return response()->json([
                     "data" => "Senha inválida"
@@ -89,12 +88,13 @@ class UserController extends Controller
         }
     }
 
-    public function logout ($id) {
+    public function logout($id)
+    {
         try {
             $user = User::where("id", $id)->first();
 
             $user->tokens()->delete();
-    
+
             return response()->json([
                 "data" => $user
             ], 200);
@@ -103,7 +103,33 @@ class UserController extends Controller
                 "data" => $e->getMessage()
             ], 500);
         }
+    }
 
-        
+    public function updateUser(Request $request, $id)
+    {
+        $request->validate([
+            "name" => "required|string",
+            "tipo_id" => "required|integer",
+            "local_id" => "required|integer",
+            "budget" => "required|numeric"
+        ]);
+
+        try {
+            $user = User::where("id", $id)->update([
+                "name" => $request->input("name"),
+                "tipo_id" => $request->input("tipo_id"),
+                "local_id" => $request->input("local_id"),
+                "budget" => $request->input("budget")
+            ]);
+
+            return response()->json([
+                "data" => $user
+            ], 200);
+        } catch (Exception $e) {
+            dd($e->getMessage());
+            return response()->json([
+                "data" => $e->getMessage()
+            ], 500);
+        }
     }
 }

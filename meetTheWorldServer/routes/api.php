@@ -26,6 +26,7 @@ Route::get("tipo", [TipoController::class, "getAll"]);
 
 route::middleware(["auth:sanctum"])->group(function () {
     Route::get("user/logout/{id}", [UserController::class, "logout"]);
+    Route::put('user/{id}', [UserController::class, "updateUser"]);
     Route::get("post/getPostsResume", [PostController::class, "getPostsResume"]);
     Route::resource('post', PostController::class);
 });
